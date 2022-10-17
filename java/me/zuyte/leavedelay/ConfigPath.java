@@ -9,4 +9,12 @@ public class ConfigPath {
 
     public static final String MSG_CLICK_START = ".start";
     public static final String MSG_CLICK_CANCEL = ".cancel";
+
+    public static final String LANG_ITEM_NAME = ".addons.leavedelay.item.name";
+
+    public static final String LANG_ITEM_LORE = ".addons.leavedelay.item.lore";
+
+    public static final String LANG_CLICK_START = ".addons.leavedelay.messages.start";
+
+    public static final String LANG_CLICK_CANCEL = ".addons.leavedelay.messages.cancel";
 }

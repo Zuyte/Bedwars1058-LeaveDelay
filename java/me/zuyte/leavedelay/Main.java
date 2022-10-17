@@ -2,6 +2,8 @@ package me.zuyte.leavedelay;
 
 import com.andrei1058.bedwars.api.BedWars;
 import com.andrei1058.bedwars.api.configuration.ConfigManager;
+import com.andrei1058.bedwars.api.language.Language;
+import me.zuyte.leavedelay.commands.LeaveDelayCommand;
 import me.zuyte.leavedelay.events.InventoryEvents;
 import me.zuyte.leavedelay.events.ItemEvents;
 import me.zuyte.leavedelay.events.PlayerEvents;
@@ -23,6 +25,7 @@ public final class Main extends JavaPlugin {
     private static ConfigManager msg;
     private static BedWars bw;
     private static Main instance;
+    public static Boolean useLang;
     private final Map<String, Boolean> click = new HashMap<>();
     @Override
     public void onEnable() {
@@ -32,13 +35,20 @@ public final class Main extends JavaPlugin {
             return;
         }
         instance = this;
-        bw = Bukkit.getServicesManager().getRegistration(BedWars.class).getProvider();
+        useLang = Boolean.valueOf(false);
+        bw = (BedWars)Bukkit.getServicesManager().getRegistration(BedWars.class).getProvider();
         cfg = new ConfigManager(this, "config", "plugins/BedWars1058/Addons/Leave-Delay");
         msg = new ConfigManager(this, "messages", "plugins/BedWars1058/Addons/Leave-Delay");
         getServer().getPluginManager().registerEvents(new ItemEvents(), this);
         getServer().getPluginManager().registerEvents(new PlayerEvents(), this);
         getServer().getPluginManager().registerEvents(new InventoryEvents(), this);
+        getCommand("leavedelay").setExecutor(new LeaveDelayCommand());
         setupConfigs();
+        if (getCfg().getBoolean(".settings.use-lang")) {
+            getLogger().warning("Using Bedwars1058's language system");
+            useLang = Boolean.valueOf(true);
+            setupLang();
+        }
         getLogger().info("Plugin enabled successfully!");
     }
 
@@ -89,6 +99,19 @@ public final class Main extends JavaPlugin {
         getMsg().save();
     }
 
+    private static void setupLang() {
+        for (Language language : Language.getLanguages()) {
+            if (!language.exists(".addons.leavedelay.item.name"))
+                language.set(".addons.leavedelay.item.name", "&c&lReturn to Lobby &7(Right Click)");
+            if (!language.exists(".addons.leavedelay.item.lore"))
+                language.set(".addons.leavedelay.item.lore", Arrays.asList(new String[] { "&fRight-Click to leave arena!" }));
+            if (!language.exists(".addons.leavedelay.messages.start"))
+                language.set(".addons.leavedelay.messages.start", "&a&lTeleporting you to the lobby in {delay} seconds... Right-click again to cancel the teleport!");
+            if (!language.exists(".addons.leavedelay.messages.cancel"))
+                language.set(".addons.leavedelay.messages.cancel", "&c&lTeleport cancelled!");
+        }
+    }
+
     public static void bedItem(Player p) {
         Material BedMaterial = null;
         try {
@@ -118,7 +141,7 @@ public final class Main extends JavaPlugin {
         BedItem.setItemMeta(BedMeta);
         ItemStack BedItem1 = Main.getBedWars().getVersionSupport().addCustomData(BedItem, "BWLEAVE-DELAY");
         try {
-        p.getInventory().setItem(Integer.parseInt(Main.getCfg().getString(ConfigPath.CFG_ITEM_SLOT)), BedItem1);
+        p.getInventory().setItem(Main.getCfg().getInt(ConfigPath.CFG_ITEM_SLOT), BedItem1);
         } catch (Exception ex) {
             Main.getInstance().getLogger().severe("An error occurred while getting CFG_ITEM_SLOT from config.yml");
             ex.printStackTrace();

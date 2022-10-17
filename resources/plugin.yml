@@ -5,3 +5,11 @@ api-version: '1.13'
 authors: [ Zuyte ]
 description: adds leave delay to bedwars quit item
 softdepend: [ Bedwars1058 ]
+commands:
+  leavedelay:
+    description: 'Reloads the leavedelay config'
+    permission: 'bw.leavedelay'
+permissions:
+   bw.leavedelay:
+   description: 'permission to use /leavedelay'
+   default: OP

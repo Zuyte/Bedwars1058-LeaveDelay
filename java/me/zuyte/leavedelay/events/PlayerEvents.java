@@ -19,9 +19,13 @@ public class PlayerEvents implements Listener {
             Bukkit.getScheduler().runTaskLater(Main.getInstance(), new Runnable() {
                 @Override
                 public void run() {
-                    String preitemslot = Main.getBedWars().getConfigs().getMainConfig().getYml().getString(".pre-game-items.leave.slot");
-                    p.getInventory().setItem(Integer.parseInt(preitemslot), new ItemStack(Material.AIR, 1));
-                    Main.bedItem(p);
+                    try {
+                        int preitemslot = Main.getBedWars().getConfigs().getMainConfig().getYml().getInt(".pre-game-items.leave.slot");
+                        p.getInventory().setItem(preitemslot, new ItemStack(Material.AIR, 1));
+                        Main.bedItem(p);
+                    } catch (Exception e) {
+                        Main.bedItem(p);
+                    }
                 }
             }, 10L);
         }
