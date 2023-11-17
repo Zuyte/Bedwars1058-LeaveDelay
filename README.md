@@ -1,2 +1,4 @@
 # Bedwars1058-LeaveDelay
-⚠ Re-writing the code
+Adds delay to leave item in bw1058
+Ver: 1.0.6
+
