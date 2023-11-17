@@ -4,12 +4,12 @@ main: me.zuyte.leavedelay.Main
 api-version: '1.13'
 authors: [ Zuyte ]
 description: adds leave delay to bedwars quit item
-softdepend: [ Bedwars1058 ]
+softdepend: [ BedWars1058 ]
 commands:
   leavedelay:
     description: 'Reloads the leavedelay config'
     permission: 'bw.leavedelay'
 permissions:
    bw.leavedelay:
-   description: 'permission to use /leavedelay'
-   default: OP
+    description: 'permission to use /leavedelay'
+    default: OP

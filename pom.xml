@@ -6,7 +6,7 @@
 
     <groupId>me.zuyte.leavedelay</groupId>
     <artifactId>Bedwars1058-LeaveDelay</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <packaging>jar</packaging>
 
     <name>Bedwars1058-LeaveDelay</name>

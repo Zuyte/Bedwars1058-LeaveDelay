@@ -10,7 +10,6 @@ public class InventoryEvents implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR) return;
         if (Main.getBedWars().getVersionSupport().isCustomBedWarsItem(e.getCurrentItem()) && Main.getBedWars().getVersionSupport().getCustomData(e.getCurrentItem()).equals("BWLEAVE-DELAY")) {
             e.setCancelled(false);
         }

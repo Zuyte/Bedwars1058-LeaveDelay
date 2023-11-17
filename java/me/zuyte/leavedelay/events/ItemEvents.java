@@ -14,23 +14,12 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class ItemEvents implements Listener {
-    private int task1id;
 
     @EventHandler
     public void onItemInteract(PlayerInteractEvent e) {
         if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (Main.getBedWars().getVersionSupport().getItemInHand(e.getPlayer()).getType() == null || Main.getBedWars().getVersionSupport().getItemInHand(e.getPlayer()).getType() == Material.AIR)
-                return;
-            try {
-                if (Main.getBedWars().getVersionSupport().getItemInHand(e.getPlayer()).getType() != Material.getMaterial(Main.getCfg().getYml().getString(".item.material")))
-                    return;
-            } catch (Exception ex) {
-                Main.getInstance().getLogger().severe("An error occurred while getting CFG_ITEM_MATERIAL from config.yml. Invalid material, Please check config.yml.");
-            }
-            if (!Main.getBedWars().getVersionSupport().isCustomBedWarsItem(Main.getBedWars().getVersionSupport().getItemInHand(e.getPlayer())) && !Main.getBedWars().getVersionSupport().getCustomData(Main.getBedWars().getVersionSupport().getItemInHand(e.getPlayer())).equals("BWLEAVE-DELAY"))
-                return;
-            if (Main.getBedWars().getArenaUtil().getArenaByPlayer(e.getPlayer()) == null)
-                return;
+            if (!Main.getBedWars().getVersionSupport().isCustomBedWarsItem(e.getItem()) || !Main.getBedWars().getVersionSupport().getCustomData(e.getItem()).equals("BWLEAVE-DELAY")) return;
+            if (Main.getBedWars().getArenaUtil().getArenaByPlayer(e.getPlayer()) == null) return;
             if (Main.getBedWars().getArenaUtil().getArenaByPlayer(e.getPlayer()).getStatus() == GameState.starting || Main.getBedWars().getArenaUtil().getArenaByPlayer(e.getPlayer()).getStatus() == GameState.waiting) {
                 final Player p = e.getPlayer();
                 if (!Main.getInstance().existClick(p.getUniqueId().toString()).booleanValue()) {
@@ -60,32 +49,32 @@ public class ItemEvents implements Listener {
                         ex.printStackTrace();
                         return;
                     }
-                    BukkitRunnable task1 = new BukkitRunnable() {
+                    Runnable task1 = new Runnable() {
                         public void run() {
                             if (!Main.getInstance().existClick(p.getUniqueId().toString()).booleanValue()) {
                                 Main.getInstance().removeClick(p.getUniqueId().toString());
-                                return;
-                            }
-                            if (Main.getBedWars().getArenaUtil().getArenaByPlayer(p) == null) {
-                                Main.getInstance().removeClick(p.getUniqueId().toString());
-                                return;
-                            }
-                            if (Main.getBedWars().getArenaUtil().getArenaByPlayer(p).getStatus() == GameState.waiting || Main.getBedWars().getArenaUtil().getArenaByPlayer(p).getStatus() == GameState.starting) {
-                                try {
-                                    p.performCommand("leave");
-                                } catch (Exception exception) {}
-                                Main.getInstance().removeClick(p.getUniqueId().toString());
                             } else {
-                                Main.getInstance().removeClick(p.getUniqueId().toString());
-                                return;
+                                if (Main.getBedWars().getArenaUtil().getArenaByPlayer(p) == null) {
+                                    Main.getInstance().removeClick(p.getUniqueId().toString());
+                                    return;
+                                }
+                                if (Main.getBedWars().getArenaUtil().getArenaByPlayer(p).getStatus() == GameState.waiting || Main.getBedWars().getArenaUtil().getArenaByPlayer(p).getStatus() == GameState.starting) {
+                                    try {
+                                        p.performCommand("leave");
+                                    } catch (Exception exception) {
+                                    }
+                                    Main.getInstance().removeClick(p.getUniqueId().toString());
+                                } else {
+                                    Main.getInstance().removeClick(p.getUniqueId().toString());
+                                    return;
+                                }
                             }
                         }
                     };
-                    this.task1id = Bukkit.getScheduler().runTaskLater(Main.getInstance(), task1, delay.longValue()).getTaskId();
+                    Bukkit.getScheduler().runTaskLater(Main.getInstance(), task1, delay.longValue());
                 } else if (!Main.useLang.booleanValue()) {
                     try {
                         Main.getInstance().removeClick(p.getUniqueId().toString());
-                        Bukkit.getScheduler().cancelTask(this.task1id);
                         p.sendMessage(ColorUtil.getMsg(Main.getMsg().getYml().getString(".cancel")));
                     } catch (Exception ex) {
                         Main.getInstance().getLogger().severe("An error occurred while getting MSG_CLICK_CANCEL from messages.yml");
@@ -95,7 +84,6 @@ public class ItemEvents implements Listener {
                 } else {
                     try {
                         Main.getInstance().removeClick(p.getUniqueId().toString());
-                        Bukkit.getScheduler().cancelTask(this.task1id);
                         p.sendMessage(ColorUtil.getMsg(Main.getBedWars().getPlayerLanguage(e.getPlayer()).getString(".addons.leavedelay.messages.cancel")));
                     } catch (Exception ex) {
                         Main.getInstance().getLogger().severe("An error occurred while getting LANG_CLICK_CANCEL from messages.yml");
